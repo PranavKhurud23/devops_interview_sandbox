@@ -1,13 +1,14 @@
 name: Terraform CI pipeline
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-defaults:
-  run:
-    working-directory: ./terraform
+  workflow_dispatch:
+  #push:
+   # branches: [ "main" ]
+ # pull_request:
+#    branches: [ "main" ]
+#defaults:
+#  run:
+#    working-directory: ./terraform
 
 permissions: 
     contents: read
