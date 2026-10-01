@@ -1,28 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: expense-tracker-deployment
+  name: expense-tracker-web
   labels:
-    app: expense-tracker
+    app: expense-tracker-web
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: expense-tracker
+      app: expense-tracker-web
   template:
     metadata:
       labels:
-        app: expense-tracker
+        app: expense-tracker-web
     spec:
       containers:
-      - name: expense-tracker
+      - name: web
         image: asia-south1-docker.pkg.dev/project-3abb875e-b867-4aaf-843/expense-repo/expense-tracker-web:latest
         ports:
         - containerPort: 8501
         resources:
           requests:
-            cpu: "100m"
-            memory: "128Mi"
+            memory: "5Mi"
+            cpu: "10m"
           limits:
-            cpu: "250m"
-            memory: "256Mi"
+            memory: "10Mi" # <--- INJECTED FAULT 1: Ultra-low memory to force OOMKilled
+        livenessProbe:
+          httpGet:
+            path: /healthz-broken # <--- INJECTED FAULT 2: Bad path to force probe failures
+            port: 8501
+          initialDelaySeconds: 5
+          periodSeconds: 5
