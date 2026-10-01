@@ -24,10 +24,12 @@ spec:
             memory: "5Mi"
             cpu: "10m"
           limits:
-            memory: "10Mi" # <--- INJECTED FAULT 1: Ultra-low memory to force OOMKilled
+            #memory: "10Mi" # <--- CrashLoopBackoff Scenario -->  INJECTED FAULT 1: Ultra-low memory to force OOMKilled
+             memory: "256Mi" #Fix For OOMKilled
         livenessProbe:
           httpGet:
-            path: /healthz-broken # <--- INJECTED FAULT 2: Bad path to force probe failures
+            #path: /healthz-broken # <--- If an application shows as Running in Kubernetes but users get no response
+             path: /  ### Fix for  application shows as Running in Kubernetes but users get no response
             port: 8501
           initialDelaySeconds: 5
           periodSeconds: 5
