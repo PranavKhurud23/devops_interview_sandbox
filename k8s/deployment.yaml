@@ -21,11 +21,14 @@ spec:
         - containerPort: 8501
         resources:
           requests:
-            memory: "5Mi"
-            cpu: "10m"
+            #memory: "5Mi"
+            memory: "128Mi" #Scenario 2 : CPU/Lateneyc
+            #cpu: "10m"
+            cpu: "5m"
           limits:
             #memory: "10Mi" # <--- CrashLoopBackoff Scenario -->  INJECTED FAULT 1: Ultra-low memory to force OOMKilled
              memory: "256Mi" #Fix For OOMKilled
+             cpu: "10m" #<--- INJECTED FAULT 2: Ultra-low CPU limit forces severe CPU throttling/latency
         livenessProbe:
           httpGet:
             #path: /healthz-broken # <--- If an application shows as Running in Kubernetes but users get no response
