@@ -16,24 +16,20 @@ spec:
     spec:
       containers:
       - name: web
-        #image: asia-south1-docker.pkg.dev/project-3abb875e-b867-4aaf-843/expense-repo/expense-tracker-web:latest
-        image: asia-south1-docker.pkg.dev/project-3abb875e-b867-4aaf-843/expense-repo/expense-tracker-web:v2.0.0-broken  ## Replicate Scenario 3: Breaking & Fixing a Rolling Deployment
+        # Replicate Scenario 3: Breaking & Fixing a Rolling Deployment
+        image: asia-south1-docker.pkg.dev/project-3abb875e-b867-4aaf-843/expense-repo/expense-tracker-web:v2.0.0-broken
         ports:
         - containerPort: 8501
         resources:
           requests:
-            #memory: "5Mi"
-            memory: "128Mi" #Scenario 2 : CPU/Lateneyc
-            #cpu: "10m"
+            memory: "128Mi"
             cpu: "5m"
           limits:
-            #memory: "10Mi" # <--- CrashLoopBackoff Scenario -->  INJECTED FAULT 1: Ultra-low memory to force OOMKilled
-             memory: "256Mi" #Fix For OOMKilled
-             cpu: "10m" #<--- INJECTED FAULT 2: Ultra-low CPU limit forces severe CPU throttling/latency
+            memory: "256Mi"
+            cpu: "10m"
         livenessProbe:
           httpGet:
-            #path: /healthz-broken # <--- If an application shows as Running in Kubernetes but users get no response
-             path: /  ### Fix for  application shows as Running in Kubernetes but users get no response
+            path: /
             port: 8501
           initialDelaySeconds: 5
           periodSeconds: 5
