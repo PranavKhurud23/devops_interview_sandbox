@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: expense-tracker-config
+data:
+ APP_ENV: "production"
+ DB_HOST: "postgres-db.internal.cloud"
+ DB_PORT: "5432"
+ FEATURE_FLAG_ANALYTICS: "disabled"
