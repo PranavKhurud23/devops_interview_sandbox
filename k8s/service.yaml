@@ -5,8 +5,8 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    #app: expense-tracker  ########## App unreachable / Timeouts
-    app: expense-tracker-web   # Fixed to match pod label 
+    app: expense-tracker  ########## Scenario 4: Application Active but Users Get Connection Refused / 502
+    #app: expense-tracker-web   # Fixed to match pod label 
   ports:
     - protocol: TCP
       port: 80
