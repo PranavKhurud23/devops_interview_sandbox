@@ -6,4 +6,9 @@ data:
  APP_ENV: "production"
  DB_HOST: "postgres-db.internal.cloud"
  DB_PORT: "5432"
- FEATURE_FLAG_ANALYTICS: "disabled"
+ #FEATURE_FLAG_ANALYTICS: "disabled" with this overall output is below
+ ###########################################################
+ #APP_ENV=production
+#DB_HOST=postgres-db.internal.cloud
+#FEATURE_FLAG_ANALYTICS=disabled
+FEATURE_FLAG_ANALYTICS: "enabled"  #Flag updated to enabled 
