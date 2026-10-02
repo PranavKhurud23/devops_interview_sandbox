@@ -14,4 +14,5 @@ spec:
           service:
             name: expense-tracker-service
             port:
-              number: 8080   # ❌ INTENTIONAL FAULT: Service port is actually 80!
+              #number: 8080   # ❌ INTENTIONAL FAULT: Service port is actually 80!
+              number: 80    # ✅ FIXED: Matches service.yaml spec.ports[0].port
