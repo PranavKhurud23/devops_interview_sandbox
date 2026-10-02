@@ -16,22 +16,25 @@ spec:
     spec:
       containers:
       - name: web
-        # Replicate Scenario 3: Breaking & Fixing a Rolling Deployment
-        #image: asia-south1-docker.pkg.dev/project-3abb875e-b867-4aaf-843/expense-repo/expense-tracker-web:v2.0.0-broken
-        #Fix for Breaking & Fixing Deployment
         image: asia-south1-docker.pkg.dev/project-3abb875e-b867-4aaf-843/expense-repo/expense-tracker-web:latest
         ports:
         - containerPort: 8501
         resources:
           requests:
             memory: "128Mi"
-            cpu: "5m"
+            cpu: "50m"
           limits:
             memory: "256Mi"
-            cpu: "10m"
+            cpu: "100m"
         livenessProbe:
           httpGet:
             path: /
             port: 8501
-          initialDelaySeconds: 5
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8501
+          initialDelaySeconds: 10
           periodSeconds: 5
