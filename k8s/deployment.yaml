@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
       - name: web
-        image: asia-south1-docker.pkg.dev/project-3abb875e-b867-4aaf-843/expense-repo/expense-tracker-web:latest
+        #image: asia-south1-docker.pkg.dev/project-3abb875e-b867-4aaf-843/expense-repo/expense-tracker-web:latest
+        image: asia-south1-docker.pkg.dev/project-3abb875e-b867-4aaf-843/expense-repo/expense-tracker-web:v2.0.0-broken  ## Replicate Scenario 3: Breaking & Fixing a Rolling Deployment
         ports:
         - containerPort: 8501
         resources:
