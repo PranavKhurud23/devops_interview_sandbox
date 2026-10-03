@@ -5,8 +5,9 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: standard-rwo # # Scenario 8 fixed ✅ Fixed: Valid GKE StorageClass
   #storageClassName: invalid-fast-ssd-class  # ❌ INTENTIONAL FAULT: Non-existent StorageClass
-  storageClassName: standard-rwd  # Scenario 8 fixed ✅ Fixed: Valid GKE StorageClass
+  #storageClassName: standard-rwd  # Scenario 8 fixed ✅ Fixed: Valid GKE StorageClass : No with this geeting error because it donesnt exist in out cluser default one is -rwo
   resources:
     requests:
       storage: 10Gi
