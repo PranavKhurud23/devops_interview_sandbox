@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: expense-tracker-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: invalid-fast-ssd-class  # ❌ INTENTIONAL FAULT: Non-existent StorageClass
+  resources:
+    requests:
+      storage: 10Gi
