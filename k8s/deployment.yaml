@@ -19,16 +19,6 @@ spec:
         image: asia-south1-docker.pkg.dev/project-3abb875e-b867-4aaf-843/expense-repo/expense-tracker-web:latest
         ports:
         - containerPort: 8501
-        envFrom:
-        - configMapRef:
-            name: expense-tracker-config   # Inject ConfigMap keys as environment variables
-        volumeMounts:                      #Scnenario 8 ass PVC mount to POD as without this PVC went into pending state
-          - name: storage-volume
-            mountPath: /app/data
-      volumes:
-        - name: storage-volume
-          persistentVolumeClaim:
-              claimName: expense-tracker-pvc      
         resources:
           requests:
             memory: "128Mi"
@@ -36,15 +26,13 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "100m"
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 8501
-          initialDelaySeconds: 15
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 8501
-          initialDelaySeconds: 10
-          periodSeconds: 5
+        envFrom:
+        - configMapRef:
+            name: expense-tracker-config
+        volumeMounts:
+        - name: storage-volume
+          mountPath: /app/data
+      volumes:
+      - name: storage-volume
+        persistentVolumeClaim:
+          claimName: expense-tracker-pvc
