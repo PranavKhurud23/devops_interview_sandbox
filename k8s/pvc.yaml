@@ -5,7 +5,8 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: invalid-fast-ssd-class  # ❌ INTENTIONAL FAULT: Non-existent StorageClass
+  #storageClassName: invalid-fast-ssd-class  # ❌ INTENTIONAL FAULT: Non-existent StorageClass
+  storageClassName: standard-rwd  # Scenario 8 fixed ✅ Fixed: Valid GKE StorageClass
   resources:
     requests:
       storage: 10Gi
