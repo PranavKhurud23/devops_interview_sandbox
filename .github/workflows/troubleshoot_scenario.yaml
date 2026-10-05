@@ -59,6 +59,37 @@ jobs:
                echo "=== INSPECTING EVENTS FOR PROBE / SCHEDULING FAILURES ==="
                kubectl get events -n default --sort-by='.metadata.creationTimestamp' | tail -n 20
 
+        # =====================================================================
+# SCENARIO 2: UNHEALTHY PODS / INTERMITTENT 502 BAD GATEWAY
+# ---------------------------------------------------------------------
+# Scenario Details:
+# - Users report intermittent 502 Bad Gateway at /checkout route.
+# - Pod status shows READY: 0/1 and RESTARTS > 0 for one replica.
+# - Goal: Identify why the pod is failing readiness probes or crashing.
+# =====================================================================
+
+        - name: "Scenario 2 - Step 1: Check Registered Endpoints"
+          run: |
+              echo "Check Active Endpoints"
+              kubectl get endpoints -n default -l app=expense-tracker
+
+        - name: "Sc 2 - Step 2: Describe POD Events and Probe Failure"
+          run: |
+              echo "Check Pod Events & Probe Status"
+              kubectl describe pods -n default -l app=expense-tracker
+
+        - name: "Sc 2 - Step 3: Fetch Container Logs Before Last Crash"
+          run: |
+              echo "Inspect previous logs for Crash Analysis"
+              kubectl logs -n default -l app=expense-tracker --previous --tail=100 || echo "No Previous Crashed Logs Found"
+ 
+              
+ 
+     
+      
+
+      
+
                
                
                
