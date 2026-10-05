@@ -8,3 +8,15 @@ jobs:
      steps:
         - name: Test workflow
           run: echo "Hello Troubleshoot workflow"
+        - name: Checkout the code
+          uses: actions/checkout@v4
+        - name: Authorization to GCP
+          uses: google-github-actions/auth@v2
+          with:
+            workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+            service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+        - name: connect to GKE Cluster
+          uses: google-github_actions/get-gke-credentials@v2
+          with:
+            cluster_name: 'devops-gke-cluster'
+            location: 'asia-south1'
