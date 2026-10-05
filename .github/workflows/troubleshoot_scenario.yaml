@@ -23,3 +23,12 @@ jobs:
           with:
             cluster_name: 'devops-gke-cluster'
             location: 'asia-south1'
+       # ========================================================================
+      # SCENARIO 1: 502/504 GATEWAY ERRORS DIAGNOSTIC RUNBOOK
+      # Users reporting intermittent 502 Bad Gateway / 504 Gateway Timeout errors from 
+      # an Ingress controller pointing to an expense-tracker-web service.
+      # =======================================================================
+        - name: "Step 1: Inspect Ingress Log for 502/504 Errors"
+          run: |
+               echo "=== Checking Ingress Controller Logs =="
+               kubectl logs -n ingress-nginx deployment/ingress-nginx-controller --tail=200 | grep -E "502|504"
