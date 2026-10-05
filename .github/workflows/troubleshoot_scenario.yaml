@@ -1,10 +1,10 @@
 name: "Devops SRE Troubleshoot Question Practice"
 on:
   workflow_dispatch:
-job:
+jobs:
   run-troubleshoot-job:
      name: "Run the Workflow"
      runs-on: ubuntu-latest
-  steps:
-    - name: Test workflow
-      run: echo "Hi, Devops SRE Troubleshoot Question Practice workflow"
+     steps:
+        - name: Test workflow
+          run: echo "Hello Troubleshoot workflow"
