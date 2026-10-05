@@ -1,6 +1,9 @@
 name: "Devops SRE Troubleshoot Question Practice"
 on:
   workflow_dispatch:
+permissions: 
+  contents: read
+  id-token: write
 jobs:
   run-troubleshoot-job:
      name: "Run the Workflow"
