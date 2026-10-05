@@ -31,4 +31,36 @@ jobs:
         - name: "Step 1: Inspect Ingress Log for 502/504 Errors"
           run: |
                echo "=== Checking Ingress Controller Logs =="
-               kubectl logs -n ingress-nginx deployment/ingress-nginx-controller --tail=200 | grep -E "502|504"
+               #kubectl logs -n ingress-nginx deployment/ingress-nginx-controller --tail=200 | grep -E "502|504"
+               kubectl get ingress -n default || echo "No Ingress Found"
+
+        - name: "Step 2: Check Pod and Endpoint Status"
+          run: | 
+               echo "Checking pod healthy in defaultnamespace"
+               kubectl get pods -n default -o wide -l app=expense-tracker
+
+        - name: "Step 3: Check Pod Resource usage and Restart"
+          run: |
+               echo "Checking pod resource Usage & Restart"
+               kubectl top pods -n default -l app=expense-tracker || echo "Metrics Server not ready/installed."
+
+        - name: "Step 4: Check Liveness / Readiness Probe Failures"
+          run: |
+               echo "=== INSPECTING EVENTS FOR PROBE / SCHEDULING FAILURES ==="
+               kubectl get events -n default --sort-by='.metadata.creationTimestamp' | tail -n 20
+
+        - name: "Step 5: Verify Application Container Logs"
+          run: |
+               echo "CHECKING RECENT APPLICATION LOGS"
+               kubectl logs -n default -l app=expense-tracker --tail=100 --all-containers=true
+
+        - name: "Step 6: \n=== CHECKING FOR RECENT RESTARTS === "
+          run: |
+               echo "=== INSPECTING EVENTS FOR PROBE / SCHEDULING FAILURES ==="
+               kubectl get events -n default --sort-by='.metadata.creationTimestamp' | tail -n 20
+
+               
+               
+               
+             
+               
