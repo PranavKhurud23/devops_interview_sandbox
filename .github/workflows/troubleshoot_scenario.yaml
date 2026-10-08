@@ -146,3 +146,34 @@ jobs:
             kubectl get pods -l app=expense-tracker --show-labels -n default
             echo "Deployment Details"
             kubectl describe deployment expense-tracker-deployment -n default | grep -A 5 "Labels:"
+
+     # =====================================================================
+      # SCENARIO 6: PODS STUCK IN PENDING / CLUSTER AUTOSCALER & NODE SATURATION
+      # ---------------------------------------------------------------------
+      # Scenario Details:
+      # - Pods stuck in Pending during scale up (0/1 READY).
+      # - Goal: Inspect node allocatable limits, scheduling events, and autoscaler status.
+      #During a peak traffic period, your team scales up the expense-tracker-deployment 
+      #from 2 replicas to 15 replicas to handle the incoming load.However, after running the scale command, 5 out of the 15 pods are stuck in Pending state indefinitely:
+      #The application is degrading because the active 10 pods are overloaded, and the 5 pending pods refuse to schedule onto nodes.
+      #
+      # =====================================================================
+
+        - name: "Scenario 5 - Step 1: Investigate Pod scheduling events"
+          continue-on-error: true
+          run: |
+                echo "Checking POD Events"
+                kubectl describe pods -l app=expense-tracker -n default || grep -A 8 "Events:"
+        - name: "SC 5 - step 2: Check Node Resource Allocation"
+          continue-on-error: true
+          run: |
+                echo "Node Resource allocation"
+                kubectl describe nodes |  grep -A 5 "Allocated resources:"
+        - name: "SC 5 - step 3: Check cluster Autoscaler status"
+          continue-on-error: true
+          run: |
+               echo "Cluster Autoscale Status"
+               kubectl get configmap cluster-autoscaler-status -n kube-system -o yaml || echo "Autoscaler ConfigMap Not accessible"
+                
+
+      
