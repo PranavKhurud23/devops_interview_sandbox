@@ -82,7 +82,34 @@ jobs:
           run: |
               echo "Inspect previous logs for Crash Analysis"
               kubectl logs -n default -l app=expense-tracker --previous --tail=100 || echo "No Previous Crashed Logs Found"
- 
+
+# =====================================================================
+# SCENARIO 3: LATENCY SPIKE & CPU THROTTLING POST-DEPLOYMENT
+# ---------------------------------------------------------------------
+# Scenario Details:
+# - Response time increased from 200ms to >4s (504 Gateway Timeouts).
+# - Pods are RUNNING (1/1) with 0 restarts.
+# - Goal: Inspect CPU/Memory utilization and execute a deployment rollback.
+# =====================================================================
+
+        - name: "SC-3 1 Check Live Utilisation of CPU & MEMORY"
+          run: |
+                echo "Checking POD PCU and Memory Usage"
+                kubectl top pods -n default -l app=expense-tracker
+
+        - name: "SC-3:2 Check Deployment quota and limit"
+          run: |
+                echo "Checking Resource Limit & requests"
+                kubectl describe deployment expense-tracker-deployment -n default | grep -A 10 "Limits:"
+
+        - name: "SC-3:3 Quick Fix rollback to previous deployment"
+          run: |
+                echo "Rolling update to previous Stable version"
+                kubectl rollout undo deployment/expense-tracker-deployment -n default
+                kubectl rollout status deployment/expense-tracker-deployment -n default
+                
+                
+        
               
  
      
