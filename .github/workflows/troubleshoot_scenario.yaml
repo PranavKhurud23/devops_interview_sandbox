@@ -6,145 +6,143 @@ permissions:
   id-token: write
 jobs:
   run-troubleshoot-job:
-     name: "Run the Workflow"
-     runs-on: ubuntu-latest
-     steps:
+    name: "Run the Workflow"
+    runs-on: ubuntu-latest
+    steps:
         - name: Test workflow
           run: echo "Hello Troubleshoot workflow"
+
         - name: Checkout the code
           uses: actions/checkout@v4
+
         - name: Authorization to GCP
           uses: google-github-actions/auth@v2
           with:
             workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
             service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
         - name: connect to GKE Cluster
           uses: google-github-actions/get-gke-credentials@v2
           with:
             cluster_name: 'devops-gke-cluster'
             location: 'asia-south1'
-       # ========================================================================
+
+      # ========================================================================
       # SCENARIO 1: 502/504 GATEWAY ERRORS DIAGNOSTIC RUNBOOK
       # Users reporting intermittent 502 Bad Gateway / 504 Gateway Timeout errors from 
       # an Ingress controller pointing to an expense-tracker-web service.
       # =======================================================================
         - name: "Step 1: Inspect Ingress Log for 502/504 Errors"
+          continue-on-error: true
           run: |
-               echo "=== Checking Ingress Controller Logs =="
-               #kubectl logs -n ingress-nginx deployment/ingress-nginx-controller --tail=200 | grep -E "502|504"
-               kubectl get ingress -n default || echo "No Ingress Found"
+            echo "=== Checking Ingress Controller Logs =="
+            #kubectl logs -n ingress-nginx deployment/ingress-nginx-controller --tail=200 | grep -E "502|504"
+            kubectl get ingress -n default || echo "No Ingress Found"
 
         - name: "Step 2: Check Pod and Endpoint Status"
+          continue-on-error: true
           run: | 
-               echo "Checking pod healthy in defaultnamespace"
-               kubectl get pods -n default -o wide -l app=expense-tracker
+            echo "Checking pod healthy in defaultnamespace"
+            kubectl get pods -n default -o wide -l app=expense-tracker
 
         - name: "Step 3: Check Pod Resource usage and Restart"
+          continue-on-error: true
           run: |
-               echo "Checking pod resource Usage & Restart"
-               kubectl top pods -n default -l app=expense-tracker || echo "Metrics Server not ready/installed."
+            echo "Checking pod resource Usage & Restart"
+            kubectl top pods -n default -l app=expense-tracker || echo "Metrics Server not ready/installed."
 
         - name: "Step 4: Check Liveness / Readiness Probe Failures"
+          continue-on-error: true
           run: |
-               echo "=== INSPECTING EVENTS FOR PROBE / SCHEDULING FAILURES ==="
-               kubectl get events -n default --sort-by='.metadata.creationTimestamp' | tail -n 20
+            echo "=== INSPECTING EVENTS FOR PROBE / SCHEDULING FAILURES ==="
+            kubectl get events -n default --sort-by='.metadata.creationTimestamp' | tail -n 20
 
         - name: "Step 5: Verify Application Container Logs"
+          continue-on-error: true
           run: |
-               echo "CHECKING RECENT APPLICATION LOGS"
-               kubectl logs -n default -l app=expense-tracker --tail=100 --all-containers=true
+            echo "CHECKING RECENT APPLICATION LOGS"
+            kubectl logs -n default -l app=expense-tracker --tail=100 --all-containers=true
 
-        - name: "Step 6: \n=== CHECKING FOR RECENT RESTARTS === "
+        - name: "Step 6: Check Recent Restarts"
+          continue-on-error: true
           run: |
-               echo "=== INSPECTING EVENTS FOR PROBE / SCHEDULING FAILURES ==="
-               kubectl get events -n default --sort-by='.metadata.creationTimestamp' | tail -n 20
+            echo "=== INSPECTING EVENTS FOR PROBE / SCHEDULING FAILURES ==="
+            kubectl get events -n default --sort-by='.metadata.creationTimestamp' | tail -n 20
 
-        # =====================================================================
-# SCENARIO 2: UNHEALTHY PODS / INTERMITTENT 502 BAD GATEWAY
-# ---------------------------------------------------------------------
-# Scenario Details:
-# - Users report intermittent 502 Bad Gateway at /checkout route.
-# - Pod status shows READY: 0/1 and RESTARTS > 0 for one replica.
-# - Goal: Identify why the pod is failing readiness probes or crashing.
-# =====================================================================
+      # =====================================================================
+      # SCENARIO 2: UNHEALTHY PODS / INTERMITTENT 502 BAD GATEWAY
+      # ---------------------------------------------------------------------
+      # Scenario Details:
+      # - Users report intermittent 502 Bad Gateway at /checkout route.
+      # - Pod status shows READY: 0/1 and RESTARTS > 0 for one replica.
+      # - Goal: Identify why the pod is failing readiness probes or crashing.
+      # =====================================================================
 
         - name: "Scenario 2 - Step 1: Check Registered Endpoints"
+          continue-on-error: true
           run: |
-              echo "Check Active Endpoints"
-              kubectl get endpoints -n default -l app=expense-tracker
+            echo "Check Active Endpoints"
+            kubectl get endpoints -n default -l app=expense-tracker
 
         - name: "Sc 2 - Step 2: Describe POD Events and Probe Failure"
+          continue-on-error: true
           run: |
-              echo "Check Pod Events & Probe Status"
-              kubectl describe pods -n default -l app=expense-tracker
+            echo "Check Pod Events & Probe Status"
+            kubectl describe pods -n default -l app=expense-tracker
 
         - name: "Sc 2 - Step 3: Fetch Container Logs Before Last Crash"
+          continue-on-error: true
           run: |
-              echo "Inspect previous logs for Crash Analysis"
-              kubectl logs -n default -l app=expense-tracker --previous --tail=100 || echo "No Previous Crashed Logs Found"
+            echo "Inspect previous logs for Crash Analysis"
+            kubectl logs -n default -l app=expense-tracker --previous --tail=100 || echo "No Previous Crashed Logs Found"
 
-# =====================================================================
-# SCENARIO 3: LATENCY SPIKE & CPU THROTTLING POST-DEPLOYMENT
-# ---------------------------------------------------------------------
-# Scenario Details:
-# - Response time increased from 200ms to >4s (504 Gateway Timeouts).
-# - Pods are RUNNING (1/1) with 0 restarts.
-# - Goal: Inspect CPU/Memory utilization and execute a deployment rollback.
-# =====================================================================
+      # =====================================================================
+      # SCENARIO 3: LATENCY SPIKE & CPU THROTTLING POST-DEPLOYMENT
+      # ---------------------------------------------------------------------
+      # Scenario Details:
+      # - Response time increased from 200ms to >4s (504 Gateway Timeouts).
+      # - Pods are RUNNING (1/1) with 0 restarts.
+      # - Goal: Inspect CPU/Memory utilization and execute a deployment rollback.
+      # =====================================================================
 
         - name: "SC-3 1 Check Live Utilisation of CPU & MEMORY"
+          continue-on-error: true
           run: |
-                echo "Checking POD PCU and Memory Usage"
-                kubectl top pods -n default -l app=expense-tracker
+            echo "Checking POD PCU and Memory Usage"
+            kubectl top pods -n default -l app=expense-tracker
 
         - name: "SC-3:2 Check Deployment quota and limit"
+          continue-on-error: true
           run: |
-                echo "Checking Resource Limit & requests"
-                kubectl describe deployment expense-tracker-deployment -n default | grep -A 10 "Limits:"
+            echo "Checking Resource Limit & requests"
+            kubectl describe deployment expense-tracker-deployment -n default | grep -A 10 "Limits:"
 
         - name: "SC-3:3 Quick Fix rollback to previous deployment"
+          continue-on-error: true
           run: |
-                echo "Rolling update to previous Stable version"
-                kubectl rollout undo deployment/expense-tracker-deployment -n default
-                kubectl rollout status deployment/expense-tracker-deployment -n default
+            echo "Rolling update to previous Stable version"
+            kubectl rollout undo deployment/expense-tracker-deployment -n default
+            kubectl rollout status deployment/expense-tracker-deployment -n default
 
-# =====================================================================
-# SCENARIO 4: 503 SERVICE UNAVAILABLE / SERVICE SELECTOR MISMATCH
-# ---------------------------------------------------------------------
-#Your team deployed a brand-new microservice called payment-service to the default namespace. 
-#The deployment succeeded, and running kubectl get pods shows all 3 replicas are up and healthy:
-# However, whenever the frontend calls http://payment-service:8080/pay inside the cluster (or through the Ingress/Service), 
-# the requests immediately fail with 503 Service Unavailable or Connection Refused.
-# Scenario Details:
-# - Pods are healthy (2/2 READY), but service requests fail with 503.
-# - Target Deployment: expense-tracker-deployment
-# - Goal: Identify missing endpoints caused by label or port mismatches.
-# =====================================================================
+      # =====================================================================
+      # SCENARIO 4: 503 SERVICE UNAVAILABLE / SERVICE SELECTOR MISMATCH
+      # ---------------------------------------------------------------------
+      # Scenario Details:
+      # - Pods are healthy (2/2 READY), but service requests fail with 503.
+      # - Target Deployment: expense-tracker-deployment
+      # - Goal: Identify missing endpoints caused by label or port mismatches.
+      # =====================================================================
 
         - name: "Scenario 4 - Step 1: Check Registered Service Endpoints"
+          continue-on-error: true
           run: |
-                 echo "Checking Service Endpoints"
-                 kubectl get enpoints -l app=expense-tracker -n default || kubectl get endpoints -n default
+            echo "Checking Service Endpoints"
+            kubectl get endpoints -l app=expense-tracker -n default || kubectl get endpoints -n default
 
-        - name: "SC 4 - Step 2:Compare POD Label and Service Selector"
+        - name: "SC 4 - Step 2: Compare POD Label and Service Selector"
+          continue-on-error: true
           run: |
-                 echo "Checking POD label for expense tracker"
-                 kubectl get pods -l app=expense-tracker --show-label -n default
-                 echo "Deployment Details"
-                 kubectl describe deployment expense-tracker-deployment -n default | grep -A 5 "Labels:"
-
-                
-                
-        
-              
- 
-     
-      
-
-      
-
-               
-               
-               
-             
-               
+            echo "Checking POD label for expense tracker"
+            kubectl get pods -l app=expense-tracker --show-labels -n default
+            echo "Deployment Details"
+            kubectl describe deployment expense-tracker-deployment -n default | grep -A 5 "Labels:"
