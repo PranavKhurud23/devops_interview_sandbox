@@ -107,6 +107,32 @@ jobs:
                 echo "Rolling update to previous Stable version"
                 kubectl rollout undo deployment/expense-tracker-deployment -n default
                 kubectl rollout status deployment/expense-tracker-deployment -n default
+
+# =====================================================================
+# SCENARIO 4: 503 SERVICE UNAVAILABLE / SERVICE SELECTOR MISMATCH
+# ---------------------------------------------------------------------
+#Your team deployed a brand-new microservice called payment-service to the default namespace. 
+#The deployment succeeded, and running kubectl get pods shows all 3 replicas are up and healthy:
+# However, whenever the frontend calls http://payment-service:8080/pay inside the cluster (or through the Ingress/Service), 
+# the requests immediately fail with 503 Service Unavailable or Connection Refused.
+# Scenario Details:
+# - Pods are healthy (2/2 READY), but service requests fail with 503.
+# - Target Deployment: expense-tracker-deployment
+# - Goal: Identify missing endpoints caused by label or port mismatches.
+# =====================================================================
+
+        - name: "Scenario 4 - Step 1: Check Registered Service Endpoints"
+          run: |
+                 echo "Checking Service Endpoints"
+                 kubectl get enpoints -l app=expense-tracker -n default || kubectl get endpoints -n default
+
+        - name: "SC 4 - Step 2:Compare POD Label and Service Selector"
+          run: |
+                 echo "Checking POD label for expense tracker"
+                 kubectl get pods -l app=expense-tracker --show-label -n default
+                 echo "Deployment Details"
+                 kubectl describe deployment expense-tracker-deployment -n default | grep -A 5 "Labels:"
+
                 
                 
         
