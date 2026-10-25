@@ -96,6 +96,9 @@ resource "google_container_node_pool "node-p" {
 }
 
 
+# Prod CI/CD flow
+
+<img width="537" height="290" alt="image" src="https://github.com/user-attachments/assets/9b370a90-d7ea-466f-9ba4-4b554ca86d26" />
 
 
 **Terraform Interview Question**
