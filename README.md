@@ -41,9 +41,32 @@ If additional processing such as virus scanning, notifications, or auditing is r
 
 
 <img width="450" height="269" alt="image" src="https://github.com/user-attachments/assets/80efa61e-7e68-4745-86bf-4d19b519bb5b" />
-
-
 <img width="280" height="326" alt="image" src="https://github.com/user-attachments/assets/da10b368-7f2c-4bdc-834d-996f939fcafb" />
+
+
+# Write a Simple VPC Network
+
+resource "google_compute_network" "vpc" {
+    name = "test-vpc"
+    auto_create_subnetwork = false
+}
+resource "google_compute_subnetwork" "sbnet" { 
+     name = "test-subnet"
+     ip_cidr_range = "10.1.0.0/24"
+     region = asia-south-1
+     google_compute_network.vpc.id
+}
+# Create Cluster with this VPC
+
+resource "google_container_cluster" "primary" {
+     name = "job-cluster"
+     region = "asian-south"
+     project_id  = sdfdsdsfs or var.porject_id
+     remove_default_node_pool =  true
+     initial_node_count = 1
+     network = google_compute_network.vpc.name
+     subnetwork = google_compute_subnetwork.sbnet.name
+}
 
 
 **Terraform Interview Question**
