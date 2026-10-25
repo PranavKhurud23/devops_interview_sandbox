@@ -45,7 +45,6 @@ If additional processing such as virus scanning, notifications, or auditing is r
 
 
 # Write a Simple VPC Network
-
 resource "google_compute_network" "vpc" {
     name = "test-vpc"
     auto_create_subnetwork = false
@@ -57,7 +56,6 @@ resource "google_compute_subnetwork" "sbnet" {
      google_compute_network.vpc.id
 }
 # Create Cluster with this VPC
-
 resource "google_container_cluster" "primary" {
      name = "job-cluster"
      region = "asian-south"
@@ -67,6 +65,25 @@ resource "google_container_cluster" "primary" {
      network = google_compute_network.vpc.name
      subnetwork = google_compute_subnetwork.sbnet.name
 }
+
+# Add Node In it
+
+resource "google_container_node_pool "node-p" {
+    name = "job-node"
+    location = "asia-south"
+    project = var.project_id
+    cluster = google_container_cluster.primary.name
+    node_count = 1
+
+   node_config {
+   machine-type = "e2-medium"
+   disk_size_gb = 30
+   oauth_scope = [define auth link]
+}
+
+}
+
+
 
 
 **Terraform Interview Question**
