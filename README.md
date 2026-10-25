@@ -66,6 +66,18 @@ resource "google_container_cluster" "primary" {
      subnetwork = google_compute_subnetwork.sbnet.name
 }
 
+# For Service Account
+resource "google_service_account" "sa" {
+   account-id = "sanity-sa"
+   display_name = "APP SA for WA" 
+}
+
+# For Bucket Creation 
+<img width="436" height="315" alt="image" src="https://github.com/user-attachments/assets/3a282c06-da03-4cb0-b723-50e07ca9b326" />
+
+
+
+
 # Add Node In it
 
 resource "google_container_node_pool "node-p" {
