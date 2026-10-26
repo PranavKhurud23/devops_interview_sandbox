@@ -109,6 +109,60 @@ resource "google_container_node_pool "node-p" {
 
 }
 
+# Custome  metric & Dashboard
+Business wants a dashboard showing successful transactions.In application logs, whenever a transaction succeeds, we see: "Transaction Success"
+<img width="419" height="194" alt="image" src="https://github.com/user-attachments/assets/a9acf6b4-8b62-4bd7-a27d-7213b5a7525f" />
+
+<img width="464" height="293" alt="image" src="https://github.com/user-attachments/assets/bfed4974-97bc-4257-99c9-b9249f6dd5ea" />
+
+<img width="439" height="312" alt="image" src="https://github.com/user-attachments/assets/243d8ae2-d7dd-466c-b678-e08d3322e557" />
+
+<img width="425" height="149" alt="image" src="https://github.com/user-attachments/assets/9d6c23de-adfb-4d8f-a7bb-1cbcdfccb826" />
+
+
+GAUGE
+↓
+Current Value (Right Now)
+
+Examples:
+• CPU Usage = 65%
+• Memory Usage = 4 GB
+• Active Pods = 10
+
+Question:
+"What is the value currently?"
+
+
+DELTA
+↓
+New Changes During a Period
+
+Examples:
+• Successful Transactions Today = 500
+• Errors Generated This Hour = 25
+• API Calls Last 5 Minutes = 1000
+
+Question:
+"How many new events happened during this period?"
+
+
+CUMULATIVE
+↓
+Total Since Start
+
+Examples:
+• Total Transactions Since App Started = 1,000,000
+• Total Requests Processed Since Startup = 50,000
+• Total Messages Consumed Since Service Started = 200,000
+
+Question:
+"What is the overall running total?"
+
+
+
+
+
+
 
 # Prod CI/CD flow
 
